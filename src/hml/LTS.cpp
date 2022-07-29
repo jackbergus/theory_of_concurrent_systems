@@ -72,3 +72,33 @@ ResultSet LTS::boxsem2(const std::string &a, const ResultSet &sS) const {
 ResultSet LTS::diasem2(const std::string &a, const ResultSet &sS) const {
     return bdsem2(a, sS, false);
 }
+
+
+#include <vector>
+#include <iostream>
+#include <sstream>
+
+// take from http://stackoverflow.com/a/236803/248823
+void split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss;
+    ss.str(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+}
+
+std::istream&  operator>>(std::istream&  os, Rel &rel) {
+    std::string line;
+    if (std::getline(os, line))
+    {
+        std::vector<std::string> row_values;
+        split(line, '\t', row_values);
+        if (row_values.size() >= 3) {
+            rel.src = std::stoul(row_values.at(0));
+            rel.label = row_values.at(1);
+            rel.dst = std::stoul(row_values.at(2));
+        }
+    }
+    return os;
+}

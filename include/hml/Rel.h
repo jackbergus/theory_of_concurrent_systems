@@ -28,6 +28,9 @@
 #define HML_REL_H
 
 #include <string>
+#include <istream>
+#include <ostream>
+
 
 struct Rel {
     size_t src;
@@ -40,6 +43,9 @@ struct Rel {
     Rel& operator=(const Rel& ) = default;
     Rel& operator=(Rel&& ) = default;
     Rel(size_t src, const std::string &label, size_t dst);
+
+    friend std::ostream&  operator<<(std::ostream& os, const Rel &rel);
+    friend std::istream&  operator>>(std::istream& os, Rel &rel);
 
     bool operator==(const Rel &rhs) const;
     bool operator!=(const Rel &rhs) const;

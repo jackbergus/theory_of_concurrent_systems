@@ -39,3 +39,11 @@ bool Rel::operator==(const Rel &rhs) const {
 bool Rel::operator!=(const Rel &rhs) const {
     return !(rhs == *this);
 }
+
+std::ostream&  operator<<(std::ostream&  os, const Rel &rel) {
+    os << rel.src << "\t" << rel.label << "\t" << rel.dst << rel.dst;
+    return os;
+}
+
+
+

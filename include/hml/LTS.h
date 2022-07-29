@@ -27,11 +27,10 @@
 #include <hml/basic.h>
 #include <hml/Rel.h>
 #include <map>
+#include <iostream>
 
 #ifndef HML_LTS_H
 #define HML_LTS_H
-
-
 
 struct LTS {
     ResultSet Q;
@@ -39,19 +38,19 @@ struct LTS {
     std::unordered_set<Rel> R;
     std::map<std::pair<size_t, std::string>, ResultSet> bdsemIndex;
 
-    LTS(const std::unordered_set<size_t> &q, const std::unordered_set<std::string> &a,
+    LTS(const std::unordered_set<size_t> &q,
+        const std::unordered_set<std::string> &a,
         const std::unordered_set<Rel> &r);
-
     LTS(const std::unordered_set<Rel> &r);
 
+
+
     const StringSet& getstring( const strings& v) const;
-
     ResultSet bdsem2(const std::string& a, const ResultSet &sS, bool isAllOf = true) const;
-
     ResultSet boxsem2(const std::string& a, const ResultSet &sS) const;
-
     ResultSet diasem2(const std::string& a, const ResultSet &sS) const;
 };
 
+std::istream& operator>>(std::istream& os, Rel &rel);
 
 #endif //HML_LTS_H
