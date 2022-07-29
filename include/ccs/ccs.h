@@ -17,11 +17,16 @@ enum t {
 #include <ccs/act.h>
 #include <vector>
 #include <string>
+#include <memory>
+
+struct ccs;
+
+using ccs_ptr = std::shared_ptr<ccs>;
 
 struct ccs {
     t type;
     std::vector<act> actV;
-    std::vector<ccs*> arguments;
+    std::vector<ccs_ptr> arguments;
 
     ccs() = default;
     ccs(const ccs& ) = default;
@@ -29,20 +34,20 @@ struct ccs {
     ccs& operator=(const ccs& ) = default;
     ccs& operator=(ccs&& ) = default;
 
-    static ccs nil();
-    static ccs pref(const act& a, ccs* arg);
-    static ccs cons(const act& a, ccs* arg);
-    static ccs sum(std::initializer_list<ccs*> arg);
-    static ccs par(std::initializer_list<ccs*> arg);
-    static ccs restr(ccs* arg, std::initializer_list<act> a);
+    static ccs_ptr nil();
+    static ccs_ptr pref(const act& a, ccs_ptr arg);
+    static ccs_ptr cons(const act& a, ccs_ptr arg);
+    static ccs_ptr sum(std::initializer_list<ccs_ptr> arg);
+    static ccs_ptr par(std::initializer_list<ccs_ptr> arg);
+    static ccs_ptr restr(ccs_ptr arg, std::initializer_list<act> a);
     void collect_next(std::vector<std::pair<act, ccs>>& result) const;
     friend std::ostream &operator<<(std::ostream &os, const ccs &ccs);
 
     // Allows the definition of recursive functions
-    void set_recursive(ccs* x = nullptr) {
-        if (!x) x = this;
+    void set_recursive(ccs_ptr x = nullptr) {
+        if (!x) x = std::make_shared<ccs>(*this);
         for (size_t i = 0, N = arguments.size(); i<N; i++) {
-            ccs* a = arguments[i];
+            ccs_ptr a = arguments[i];
             if (!a) arguments[i] = x;
             else a->set_recursive(x);
         }

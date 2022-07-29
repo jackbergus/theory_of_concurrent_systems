@@ -4,41 +4,41 @@
 
 #include <ccs/ccs.h>
 
-ccs ccs::pref(const act &a, ccs* arg) {
-    struct ccs result;
-    result.type = PREF;
-    result.actV.emplace_back(a);
-    result.arguments.emplace_back(arg);
+ccs_ptr ccs::pref(const act &a, ccs_ptr arg) {
+    ccs_ptr result = std::make_shared<ccs>();
+    result->type = PREF;
+    result->actV.emplace_back(a);
+    result->arguments.emplace_back(arg);
     return result;
 }
 
-ccs ccs::cons(const act &a, ccs* arg) {
-    struct ccs result;
-    result.type = CONS;
-    result.actV.emplace_back(a);
-    result.arguments.emplace_back(arg);
+ccs_ptr ccs::cons(const act &a, ccs_ptr arg) {
+    ccs_ptr result = std::make_shared<ccs>();
+    result->type = CONS;
+    result->actV.emplace_back(a);
+    result->arguments.emplace_back(arg);
     return result;
 }
 
-ccs ccs::sum(std::initializer_list<ccs*> arg) {
-    struct ccs result;
-    result.type = SUM;
-    result.arguments.insert(result.arguments.begin(), arg);
+ccs_ptr ccs::sum(std::initializer_list<ccs_ptr> arg) {
+    ccs_ptr result = std::make_shared<ccs>();
+    result->type = SUM;
+    result->arguments.insert(result->arguments.begin(), arg);
     return result;
 }
 
-ccs ccs::par(std::initializer_list<ccs*> arg) {
-    struct ccs result;
-    result.type = PARCOM;
-    result.arguments.insert(result.arguments.begin(), arg);
+ccs_ptr ccs::par(std::initializer_list<ccs_ptr> arg) {
+    ccs_ptr result = std::make_shared<ccs>();
+    result->type = PARCOM;
+    result->arguments.insert(result->arguments.begin(), arg);
     return result;
 }
 
-ccs ccs::restr(ccs* arg, std::initializer_list<act> a) {
-    struct ccs result;
-    result.type = RES;
-    result.actV.insert(result.actV.begin(), a);
-    result.arguments.emplace_back(arg);
+ccs_ptr ccs::restr(ccs_ptr arg, std::initializer_list<act> a) {
+    ccs_ptr result = std::make_shared<ccs>();
+    result->type = RES;
+    result->actV.insert(result->actV.begin(), a);
+    result->arguments.emplace_back(arg);
     return result;
 }
 
@@ -90,9 +90,9 @@ bool ccs::operator!=(const ccs &rhs) const {
     return !(rhs == *this);
 }
 
-ccs ccs::nil() {
-    static ccs ret;
-    ret.type = NIL;
+ccs_ptr ccs::nil() {
+    ccs_ptr ret = std::make_shared<ccs>();
+    ret->type = NIL;
     return ret;
 }
 
@@ -132,7 +132,7 @@ void ccs::collect_next(std::vector<std::pair<act, ccs>> &result) const {
                         }
                     }
                     ccs current = *this;
-                    ccs* ref_second = new ccs();
+                    ccs_ptr ref_second = std::make_shared<ccs>();
                     *ref_second = ref.second;
                     current.arguments[i] = ref_second;
                     result.emplace_back(ref.first, current);
@@ -143,9 +143,9 @@ void ccs::collect_next(std::vector<std::pair<act, ccs>> &result) const {
                     for (auto j = std::begin(x.second.second); j != std::end(x.second.second); ++j) {
                         if (i->first != j->first) {
                             ccs current = *this;
-                            ccs* i_second = new ccs();
+                            ccs_ptr i_second = std::make_shared<ccs>();
                             *i_second = i->second;
-                            ccs* j_second = new ccs();
+                            ccs_ptr j_second = std::make_shared<ccs>();
                             *j_second = j->second;
                             current.arguments[i->first] = i_second;
                             current.arguments[j->first] = j_second;
@@ -168,7 +168,7 @@ void ccs::collect_next(std::vector<std::pair<act, ccs>> &result) const {
                          tmp.end());
             for (const auto& ref : tmp) {
                 ccs current = *this;
-                ccs* ref_second = new ccs();
+                ccs_ptr ref_second = std::make_shared<ccs>();
                 *ref_second = ref.second;
                 current.arguments[0] = ref_second;
                 result.emplace_back(ref.first, current);
