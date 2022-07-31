@@ -42,6 +42,27 @@ int main() {
     act b_out_signed{"b_out", true};
     act g_out_signed{"g_out", true};
 
+    //////////////////////////////////////////////////////////////////////////////
+    //////////////////////// COMPLETE SYSTEM's DEFINITION ////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
+
+    // move_up_state := pop.synch
+    // loop := g.g_out.loop + b.b_out.loop + g'.g_out'.loop + b'.b_out'.loop + move_up_state
+    // sync := push'.loop
+
+    // move := g'.stand
+    // stand := g.move
+    // attack := b.prepare
+    // prepare := b'.attack
+    // alive := (attack | move | sync)
+
+    // synch_alive := (v g,b) alive
+    // die := a'.push.pop'.a.die
+
+    // system := (v push,pop)(die|synch_alive)
+    //////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
 
     auto attack_state_only = ccs::pref(b,  nullptr); // nullptr: waiting for the recursive operator, not yet defined
     auto attack_state = ccs::cons(act("attack"), attack_state_only);
@@ -77,15 +98,16 @@ int main() {
 
     // alive := (attack | move | sync)
     auto alive_state = ccs::par({attack_state, move_state, sync});
-    // synch_alive := (v g,b) alive
+
     auto sync_alive = ccs::restr(alive_state, {g, b});
 
-    // die := a'.push.pop'.a.die
+
     auto die = ccs::cons(act("die"), ccs::pref(a_signed, ccs::pref(push, ccs::pref(pop_w, ccs::pref(a, nullptr)))));
     die->set_recursive(die);
 
-    // system := (v push,pop)(die|alive)
+    // system := (v push,pop)(die|synch_alive)
     auto system = ccs::restr(ccs::par({sync_alive, die}), {push, pop});
+
 
     // Printing the graph
     for (const auto& x : build_graph(*system)) {
