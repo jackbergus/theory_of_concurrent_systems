@@ -39,6 +39,8 @@ struct ccs;
 
 using ccs_ptr = std::shared_ptr<ccs>;
 
+#include <unordered_set>
+
 struct ccs {
     t type;
     std::vector<act> actV;
@@ -56,7 +58,7 @@ struct ccs {
     static ccs_ptr sum(std::initializer_list<ccs_ptr> arg);
     static ccs_ptr par(std::initializer_list<ccs_ptr> arg);
     static ccs_ptr restr(ccs_ptr arg, std::initializer_list<act> a);
-    void collect_next(std::vector<std::pair<act, ccs>>& result) const;
+    void collect_next(std::vector<std::pair<act, ccs>> &result, std::unordered_set<const ccs*>& ptr) const;
     friend std::ostream &operator<<(std::ostream &os, const ccs &ccs);
 
     // Allows the definition of recursive functions
@@ -71,6 +73,8 @@ struct ccs {
 
     bool operator==(const ccs &rhs) const;
     bool operator!=(const ccs &rhs) const;
+
+    void clearArguments();
 };
 
 template <> struct std::hash<struct ccs> {

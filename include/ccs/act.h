@@ -44,7 +44,8 @@ struct act {
 template <> struct std::hash<struct act> {
     std::hash<std::string> SH;
     size_t operator()(const act& x) const {
-        return SH(x.literal) * (x.tau ? 2 : 1) * (x.sign ? 4 : 1);
+        if (x.tau) return 1;
+        return (SH(x.literal) * (x.sign ? 4 : 1))*2;
     }
 };
 

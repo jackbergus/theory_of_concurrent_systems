@@ -30,16 +30,19 @@ std::unordered_map<ccs, std::unordered_set<std::pair<act, ccs>>> build_graph(con
     std::unordered_map<ccs, std::unordered_set<std::pair<act, ccs>>> graph;
 
     while (!q.empty()) {
-        const ccs curr = q.front();
+        ccs curr = q.front();
+        curr.clearArguments();
         std::stringstream s;
         s << curr;
         q.pop();
         if (visited.insert(s.str()).second) {
             std::vector<std::pair<act, ccs>> result;
-            curr.collect_next(result);
+            std::unordered_set<const ccs*> memo;
+            curr.collect_next(result, memo);
             std::cout << curr << std::endl;
             auto& S = graph[curr];
-            for (const auto& ref : result) {
+            for (auto& ref : result) {
+                ref.second.clearArguments();
                 if (S.insert(ref).second) {
                     std::cout << "\t" << ref.first << "-->" << ref.second << std::endl;
                     s.clear(); s << ref.second;

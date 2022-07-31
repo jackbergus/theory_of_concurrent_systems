@@ -24,15 +24,24 @@ act::act(const std::string &literal, bool sign) : sign(sign), literal(literal), 
 act::act() : sign(false), literal(""), tau(true) {}
 
 std::ostream &operator<<(std::ostream &os, const act &act) {
-    if (act.tau) return os << "τ";
+    if (act.tau) {
+        os << "τ";
+        if (!act.literal.empty())
+            os << "(" << act.literal << ")" << std::endl;
+        return os;
+    }
     if (act.sign) os << "~";
     return os << act.literal;
 }
+
+
 
 bool act::operator!=(const act &rhs) const {
     return !(rhs == *this);
 }
 
 bool act::operator==(const act &rhs) const {
-    return sign == rhs.sign && tau == rhs.tau && literal == rhs.literal;
+    if (tau || rhs.tau)
+        return tau == rhs.tau;
+    return sign == rhs.sign && literal == rhs.literal;
 }
