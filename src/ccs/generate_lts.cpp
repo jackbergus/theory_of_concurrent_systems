@@ -20,27 +20,34 @@
 
 #include <ccs/generate_lts.h>
 
-
+#include <sstream>
 #include <queue>
 
 std::unordered_map<ccs, std::unordered_set<std::pair<act, ccs>>> build_graph(const ccs &f) {
     std::queue<ccs> q;
     q.emplace(f);
-    std::unordered_set<ccs> visited;
+    std::unordered_set<std::string> visited;
     std::unordered_map<ccs, std::unordered_set<std::pair<act, ccs>>> graph;
 
     while (!q.empty()) {
         const ccs curr = q.front();
+        std::stringstream s;
+        s << curr;
         q.pop();
-        if (visited.insert(curr).second) {
+        if (visited.insert(s.str()).second) {
             std::vector<std::pair<act, ccs>> result;
             curr.collect_next(result);
+            std::cout << curr << std::endl;
             auto& S = graph[curr];
             for (const auto& ref : result) {
-                S.insert(ref);
-                if (!visited.contains(ref.second))
-                    q.emplace(ref.second);
+                if (S.insert(ref).second) {
+                    std::cout << "\t" << ref.first << "-->" << ref.second << std::endl;
+                    s.clear(); s << ref.second;
+                    if (!visited.contains(s.str()))
+                        q.emplace(ref.second);
+                }
             }
+            std::cout << std::endl;
         }
     }
 

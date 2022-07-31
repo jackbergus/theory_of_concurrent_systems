@@ -96,9 +96,15 @@ std::ostream &operator<<(std::ostream &os, const ccs &ccs) {
 }
 
 bool ccs::operator==(const ccs &rhs) const {
-    return type == rhs.type &&
+    bool test = type == rhs.type &&
            actV == rhs.actV &&
-           arguments == rhs.arguments;
+           arguments.size() == rhs.arguments.size();
+    if (!test) return false;
+    for (auto it = arguments.begin(), it2 = rhs.arguments.begin(); it != arguments.end() && it2 != rhs.arguments.end(); ) {
+        if (*it != *it2) return false;
+        it++; it2++;
+    }
+    return true;
 }
 
 bool ccs::operator!=(const ccs &rhs) const {

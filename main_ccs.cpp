@@ -25,24 +25,39 @@ int main() {
     auto nil = ccs::nil();
     act a{"a"};
     act b{"b"};
+    act g{"g"};
+    act a_signed{"a", true};
+    act b_signed{"b", true};
+    act g_signed{"g", true};
 
-    // B := a.A
-    auto b_state_only = ccs::pref(a, nullptr);
-    auto b_state = ccs::cons(act("B"), b_state_only);
 
-    // A:= a.A + b.B
-    auto a_sum_left = ccs::pref(a,  nullptr);
-    auto a_sum_right = ccs::pref(b,  nullptr);
-    auto a_sum = ccs::sum({a_sum_left, a_sum_right});
-    auto a_state = ccs::cons(act("A"), a_sum);
+    auto prepare_state_only = ccs::pref(b_signed,  nullptr);
+    auto prepare_state = ccs::cons(act("prepare"), prepare_state_only);
+    auto attack_state_only = ccs::pref(b,  nullptr);
+    auto attack_state = ccs::cons(act("attack"), attack_state_only);
+    attack_state_only->set_recursive(prepare_state);
+    prepare_state_only->set_recursive(attack_state);
 
-    // Defining the recursive states
-    a_sum_left->set_recursive(a_state);
-    a_sum_right->set_recursive(b_state);
-    b_state_only->set_recursive(a_state);
+    auto move_state_only = ccs::pref(g_signed,  nullptr);
+    auto move_state = ccs::cons(act("move"), move_state_only);
+    auto stand_state_only = ccs::pref(g,  nullptr);
+    auto stand_state = ccs::cons(act("stand"), stand_state_only);
+    stand_state_only->set_recursive(move_state);
+    move_state_only->set_recursive(stand_state);
+
+    auto pasive = ccs::par({attack_state, stand_state});
+
+    auto dead_state_only = ccs::pref(a_signed,  nullptr);
+    auto dead_state = ccs::cons(act("dead"), dead_state_only);
+    auto a_sum_right = ccs::pref(a,  nullptr);
+    a_sum_right->set_recursive(dead_state);
+    auto alive_state_sum = ccs::sum({pasive, a_sum_right});
+    auto alive_state = ccs::cons(act("alive"), alive_state_sum);
+    dead_state_only->set_recursive(alive_state);
+
 
     // Printing the graph
-    for (const auto& x : build_graph(*a_state)) {
+    for (const auto& x : build_graph(*dead_state)) {
         for (const auto& y : x.second) {
             std::cout << x.first << " -[" << y.first << "]->" << y.second << std::endl;
         }

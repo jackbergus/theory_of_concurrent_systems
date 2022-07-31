@@ -78,12 +78,9 @@ template <> struct std::hash<struct ccs> {
         size_t val = x.type;
         size_t arg = 13;
         size_t act = 31;
-        for (const auto & y : x.arguments)
-            if (y && (y->type != CONS))
-            arg = arg ^ std::hash<struct ccs>()(*y);
         for (const auto & y : x.actV)
             act = act ^ std::hash<struct act>()(y);
-        return val * arg * act;
+        return 0;
     }
 };
 
