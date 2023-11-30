@@ -2,7 +2,7 @@ infrastructure Giacomo
 components :=
    component Comp :=
      port out(x,y) := x.y.self
-     port inp(z) := z.a.0
+     port inp() := ~inp.a.self
 .
 connectors :=
    connector Conn :=
