@@ -1,29 +1,34 @@
 grammar adl;
 
+adl: 'infrastructure' ULOWER
+     'components' DEF component+ DOT
+     'connectors' DEF connector+ DOT
+     ('where' adl_commands+)?;
+
 process: NIL                                                #nil
        | NOT? LOWERCASE DOT process                         #action
        | process PLS process                                #alternative
        | process PAR process                                #parallel
        | LPR NUL RBR lowercase_com LBR process              #restriction
        | LPR process RPR                                    #parprocess
-       | ULOWER DEF process INN process                      #letinprocess
+       | ULOWER DEF process INN process                     #letinprocess
+       | SELF                                               #self
        ;
 
 naming: LOWERCASE                                           #simple
       | ULOWER DOT LOWERCASE                                #processComponent
       ;
 
-lowercase_com: (LOWERCASE COM)+ LOWERCASE;
-composite_com: (naming COM)+ naming;
+lowercase_com: (LOWERCASE COM)* LOWERCASE;
+composite_com: (naming COM)* naming;
 
-component: 'component' ULOWER DEF 'ports' component_port+ ;
-connector: 'connector' ULOWER DEF 'roles' component_port+ ;
-component_port : port_or_role=LOWERCASE LPR lowercase_com RPR DEF process;
+component: 'component' ULOWER DEF  component_port+ ;
+connector: 'connector' ULOWER DEF  connector_role+ ;
 
-adl: 'infrastructure' ULOWER
-     'components' DEF component+ DOT
-     'connectors' DEF connector+ DOT
-     'where' adl_commands;
+component_port : 'port' port_or_role=LOWERCASE LPR lowercase_com RPR DEF process;
+connector_role : 'role' port_or_role=LOWERCASE LPR lowercase_com RPR DEF process;
+
+
 
 adl_commands: ULOWER 'is-active'                            #active_component
             | ULOWER 'on-standby'                           #standby_component
@@ -54,6 +59,7 @@ MAX: 'MAX';
 REC: 'REC';
 TRU: 'true';
 FAL: 'false';
+SELF: 'self';
 BOX: '□';
 DIA: '◇';
 NIL: '0';

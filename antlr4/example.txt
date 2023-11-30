@@ -1,0 +1,15 @@
+infrastructure Giacomo
+components :=
+   component Comp :=
+     port out(x,y) := x.y.self
+     port inp(z) := a.z.0
+.
+connectors :=
+   connector Conn :=
+      role accept(x) := ~accept.~x.release.0
+      role release(y) := ~release.y.0
+.
+where Comp is-active
+      Conn is-active
+      Comp.out(a,Conn.accept)
+      Conn.release(Comp.inp)
