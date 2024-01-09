@@ -37,7 +37,7 @@ ccs_ptr ccs::cons(const act &a, ccs_ptr arg) {
 
 #include <unordered_set>
 #include <sstream>
-
+#include <algorithm>
 ccs_ptr ccs::sum(std::initializer_list<ccs_ptr> arg) {
     ccs_ptr result = std::make_shared<ccs>();
     result->type = SUM;
